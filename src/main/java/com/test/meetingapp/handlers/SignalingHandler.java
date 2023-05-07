@@ -1,17 +1,27 @@
 package com.test.meetingapp.handlers;
 
+import com.test.meetingapp.exceptions.WrongRoomParamException;
+import com.test.meetingapp.services.RoomService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
+
 
 @Component
+@RequiredArgsConstructor
 public class SignalingHandler implements WebSocketHandler {
+    private final RoomService roomService;
+    @Value("${room-identifier-header.name}")
+    private String roomIdentifierHeaderName;
+    @Value("${room-name-header.name}")
+    private String roomNameHeaderName;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-
+        HttpHeaders headers = session.getHandshakeHeaders();
+        String roomIdentifier = extractRoomIdentifierFromHeaders(headers);
     }
 
     @Override
@@ -21,7 +31,12 @@ public class SignalingHandler implements WebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-
+        if (exception instanceof WrongRoomParamException) {
+            session.sendMessage(new TextMessage("LOX" + exception.getMessage()));
+            session.close();
+        } else {
+            session.sendMessage(new TextMessage("NELOX" + exception.getMessage()));
+        }
     }
 
     @Override
@@ -32,5 +47,25 @@ public class SignalingHandler implements WebSocketHandler {
     @Override
     public boolean supportsPartialMessages() {
         return false;
+    }
+
+    private String extractRoomNameFromHeaders(HttpHeaders headers) {
+        String headerValue;
+        try {
+            headerValue = headers.get(roomNameHeaderName).get(0);
+        } catch (Exception e) {
+            throw new WrongRoomParamException("No name header in request");
+        }
+        return headerValue;
+    }
+
+    private String extractRoomIdentifierFromHeaders(HttpHeaders headers) {
+        String headerValue;
+        try {
+            headerValue = headers.get(roomIdentifierHeaderName).get(0);
+        } catch (Exception e) {
+            throw new WrongRoomParamException("No identifier in request");
+        }
+        return headerValue;
     }
 }
