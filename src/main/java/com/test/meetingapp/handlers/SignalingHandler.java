@@ -1,7 +1,9 @@
 package com.test.meetingapp.handlers;
 
 import com.test.meetingapp.exceptions.WrongRoomParamException;
+import com.test.meetingapp.models.Room;
 import com.test.meetingapp.services.RoomService;
+import com.test.meetingapp.services.SessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +15,7 @@ import org.springframework.web.socket.*;
 @RequiredArgsConstructor
 public class SignalingHandler implements WebSocketHandler {
     private final RoomService roomService;
+    private final SessionService sessionService;
     @Value("${room-identifier-header.name}")
     private String roomIdentifierHeaderName;
     @Value("${room-name-header.name}")
@@ -22,6 +25,7 @@ public class SignalingHandler implements WebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         HttpHeaders headers = session.getHandshakeHeaders();
         String roomIdentifier = extractRoomIdentifierFromHeaders(headers);
+        recordNewSessionInRoom(session.getId(), roomIdentifier);
     }
 
     @Override
@@ -68,4 +72,7 @@ public class SignalingHandler implements WebSocketHandler {
         }
         return headerValue;
     }
+//    private void recordNewSessionInRoom(String sessionId, String roomIdentifier){
+//        Room room = roomService
+//    }
 }
