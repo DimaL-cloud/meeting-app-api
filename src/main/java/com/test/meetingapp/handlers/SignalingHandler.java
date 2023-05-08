@@ -25,7 +25,8 @@ public class SignalingHandler implements WebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         HttpHeaders headers = session.getHandshakeHeaders();
         String roomIdentifier = extractRoomIdentifierFromHeaders(headers);
-        recordNewSessionInRoom(session.getId(), roomIdentifier);
+//        recordNewSessionInRoom(session.getId(), roomIdentifier);
+        System.out.println(session.getId());
     }
 
     @Override
