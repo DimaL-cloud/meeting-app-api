@@ -8,19 +8,19 @@ import org.springframework.web.ErrorResponse;
 
 @RequiredArgsConstructor
 public class ErrorResponseImpl implements ErrorResponse {
-    private final String errorCode;
+    private final HttpStatusCode errorCode;
     private final String errorMessage;
 
     @Override
     @NonNull
     public HttpStatusCode getStatusCode() {
-        return HttpStatusCode.valueOf(Integer.parseInt(errorCode));
+        return errorCode;
     }
 
     @Override
     @NonNull
     public ProblemDetail getBody() {
-        ProblemDetail details = ProblemDetail.forStatus(getStatusCode());
+        ProblemDetail details = ProblemDetail.forStatus(errorCode);
         details.setDetail(errorMessage);
         return details;
     }
