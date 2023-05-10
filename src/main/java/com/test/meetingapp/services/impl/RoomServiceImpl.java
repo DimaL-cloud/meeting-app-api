@@ -67,4 +67,11 @@ public class RoomServiceImpl implements RoomService {
 
         return ResponseEntity.noContent().build();
     }
+
+    @Override
+    public ResponseEntity<Void> deleteAllRooms() {
+        roomRepository.deleteAll();
+
+        return ResponseEntity.noContent().build();
+    }
 }

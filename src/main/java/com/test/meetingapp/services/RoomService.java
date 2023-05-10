@@ -15,4 +15,6 @@ public interface RoomService {
     ResponseEntity<Void> editRoom(String identifier, Room room);
 
     ResponseEntity<Void> deleteRoomByIdentifier(String identifier);
+
+    ResponseEntity<Void> deleteAllRooms();
 }

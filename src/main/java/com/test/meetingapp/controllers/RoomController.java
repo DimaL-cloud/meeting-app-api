@@ -40,4 +40,9 @@ public class RoomController {
     public ResponseEntity<Void> deleteRoomByIdentifier(@PathVariable("identifier") String identifier) {
         return roomService.deleteRoomByIdentifier(identifier);
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAllRooms() {
+        return roomService.deleteAllRooms();
+    }
 }
